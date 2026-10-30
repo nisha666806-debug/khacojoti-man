@@ -48,9 +48,7 @@ export const Register: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center p-4 bg-slate-900">
       <div className="bg-slate-800 border border-slate-700/80 rounded-2xl w-full max-w-md p-8 shadow-2xl space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white mx-auto font-bold text-xl shadow-lg shadow-sky-500/20">
-            ХМ
-          </div>
+          <img src="/logo.png" alt="Хароҷоти Ман" className="w-16 h-16 rounded-2xl mx-auto object-contain shadow-xl shadow-sky-500/20" />
           <h2 className="text-2xl font-bold text-white">Бақайдгирии нав</h2>
           <p className="text-xs text-slate-400">Барои оғози истифодаи "Хароҷоти Ман"</p>
         </div>

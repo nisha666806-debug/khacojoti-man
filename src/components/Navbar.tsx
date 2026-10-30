@@ -31,9 +31,7 @@ export const Navbar: React.FC = () => {
       <header className="sticky top-0 z-40 bg-slate-800/90 backdrop-blur border-b border-slate-700/60 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center font-bold text-white shadow-lg shadow-sky-500/20">
-              ХМ
-            </div>
+            <img src="/logo.png" alt="Хароҷоти Ман" className="w-10 h-10 rounded-xl object-contain shadow-lg shadow-sky-500/10" />
             <div>
               <h1 className="font-bold text-lg text-white leading-tight">Хароҷоти Ман</h1>
               <p className="text-xs text-slate-400">Идораи молияи шахсӣ (TJS)</p>
