@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ExpenseProvider } from './context/ExpenseContext';
 import { Navbar } from './components/Navbar';
+import { InstallPrompt } from './components/InstallPrompt';
 import { Dashboard } from './pages/Dashboard';
 import { History } from './pages/History';
 import { Reports } from './pages/Reports';
@@ -30,6 +31,7 @@ export const App: React.FC = () => {
     <BrowserRouter>
       <AuthProvider>
         <ExpenseProvider>
+          <InstallPrompt />
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
