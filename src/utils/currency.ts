@@ -1,8 +1,5 @@
-/**
- * Currency utilities for Tajik Somoni (TJS) and Diram.
- * Rule: All monetary amounts in database are stored as integer dirams.
- * 1 Somoni = 100 Dirams.
- */
+import { Language } from '../types/i18n';
+import { translations } from '../i18n/translations';
 
 export function somoniToDiram(somoni: number | string): number {
   const numeric = typeof somoni === 'string' ? parseFloat(somoni.replace(',', '.')) : somoni;
@@ -15,17 +12,23 @@ export function diramToSomoni(diram: number): number {
   return diram / 100;
 }
 
-export function formatMoney(diram: number): string {
+export function formatMoney(diram: number, lang: Language = 'tg'): string {
   const somoni = diramToSomoni(diram);
-  return `${somoni.toLocaleString('tg-TJ', {
+  const locale = lang === 'en' ? 'en-US' : lang === 'ru' ? 'ru-RU' : 'tg-TJ';
+  const unit = translations[lang].currencyUnit;
+
+  const formatted = somoni.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  })} сомонӣ`;
+  });
+
+  return `${formatted} ${unit}`;
 }
 
-export function formatMoneyWithoutUnit(diram: number): string {
+export function formatMoneyWithoutUnit(diram: number, lang: Language = 'tg'): string {
   const somoni = diramToSomoni(diram);
-  return somoni.toLocaleString('tg-TJ', {
+  const locale = lang === 'en' ? 'en-US' : lang === 'ru' ? 'ru-RU' : 'tg-TJ';
+  return somoni.toLocaleString(locale, {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });

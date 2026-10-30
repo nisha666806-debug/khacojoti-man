@@ -17,16 +17,24 @@ describe('Date Utilities (Asia/Dushanbe)', () => {
     expect(dateStr.startsWith(monthStr)).toBe(true);
   });
 
-  it('formats dates in Tajik language with correct month names', () => {
-    const formatted = formatDushanbeDate('2026-10-29');
-    expect(formatted).toContain('Октябр');
-    expect(formatted).toContain('2026');
+  it('formats dates in Tajik, Russian, and English with correct month names', () => {
+    const formattedTg = formatDushanbeDate('2026-10-29', 'tg');
+    expect(formattedTg).toContain('Октябр');
+    expect(formattedTg).toContain('2026');
+
+    const formattedRu = formatDushanbeDate('2026-10-29', 'ru');
+    expect(formattedRu).toContain('Октябрь');
+    expect(formattedRu).toContain('2026');
+
+    const formattedEn = formatDushanbeDate('2026-10-29', 'en');
+    expect(formattedEn).toContain('October');
+    expect(formattedEn).toContain('2026');
   });
 
-  it('formats month strings in Tajik', () => {
-    const month = formatDushanbeMonth('2026-05');
-    expect(month).toContain('Май');
-    expect(month).toContain('2026');
+  it('formats month strings across languages', () => {
+    expect(formatDushanbeMonth('2026-05', 'tg')).toContain('Май');
+    expect(formatDushanbeMonth('2026-05', 'ru')).toContain('Май');
+    expect(formatDushanbeMonth('2026-05', 'en')).toContain('May');
   });
 
   it('contains all 12 Tajik months', () => {

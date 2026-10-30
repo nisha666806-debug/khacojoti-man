@@ -17,9 +17,15 @@ describe('Currency Utilities (TJS / Diram)', () => {
     expect(diramToSomoni(0)).toBe(0);
   });
 
-  it('formats monetary values with Tajik somoni unit', () => {
-    const formatted = formatMoney(5000);
-    expect(formatted).toContain('сомонӣ');
+  it('formats monetary values with localized currency unit', () => {
+    const formattedTg = formatMoney(5000, 'tg');
+    expect(formattedTg).toContain('сомонӣ');
+
+    const formattedRu = formatMoney(5000, 'ru');
+    expect(formattedRu).toContain('сомони');
+
+    const formattedEn = formatMoney(5000, 'en');
+    expect(formattedEn).toContain('TJS');
   });
 
   it('handles negative or invalid values gracefully', () => {

@@ -1,31 +1,7 @@
-/**
- * Date utilities using Asia/Dushanbe timezone (UTC+5)
- */
+import { Language } from '../types/i18n';
+import { MONTH_NAMES } from '../i18n/translations';
 
-export const TAJIK_MONTHS = [
-  'Январ',
-  'Феврал',
-  'Март',
-  'Апрел',
-  'Май',
-  'Июн',
-  'Июл',
-  'Август',
-  'Сентябр',
-  'Октябр',
-  'Ноябр',
-  'Декабр',
-];
-
-export const TAJIK_WEEKDAYS = [
-  'Якшанбе',
-  'Душанбе',
-  'Сешанбе',
-  'Чоршанбе',
-  'Панҷшанбе',
-  'Ҷумъа',
-  'Шанбе',
-];
+export const TAJIK_MONTHS = MONTH_NAMES.tg;
 
 export function getDushanbeNow(): Date {
   return new Date();
@@ -53,13 +29,13 @@ export function getCurrentDushanbeMonthString(): string {
 }
 
 /**
- * Formats a date string (YYYY-MM-DD or ISO) into readable Tajik format: "29 Октябр 2026"
+ * Formats a date string (YYYY-MM-DD or ISO) into readable localized format
  */
-export function formatDushanbeDate(dateInput: string | number | Date): string {
+export function formatDushanbeDate(dateInput: string | number | Date, lang: Language = 'tg'): string {
   const d = new Date(dateInput);
   if (isNaN(d.getTime())) return String(dateInput);
 
-  const formatter = new Intl.DateTimeFormat('tg-TJ', {
+  const formatter = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Dushanbe',
     year: 'numeric',
     month: 'numeric',
@@ -78,17 +54,22 @@ export function formatDushanbeDate(dateInput: string | number | Date): string {
   }
 
   const monthIdx = parseInt(month, 10) - 1;
-  const monthName = TAJIK_MONTHS[monthIdx] || month;
+  const monthList = MONTH_NAMES[lang] || MONTH_NAMES.tg;
+  const monthName = monthList[monthIdx] || month;
 
+  if (lang === 'en') {
+    return `${monthName} ${day}, ${year}`;
+  }
   return `${day} ${monthName} ${year}`;
 }
 
 /**
- * Formats month YYYY-MM to Tajik month and year: "Октябр 2026"
+ * Formats month YYYY-MM to localized month and year: e.g. "Октябр 2026" / "October 2026"
  */
-export function formatDushanbeMonth(monthStr: string): string {
+export function formatDushanbeMonth(monthStr: string, lang: Language = 'tg'): string {
   const [yearStr, monthNum] = monthStr.split('-');
   const idx = parseInt(monthNum, 10) - 1;
-  const monthName = TAJIK_MONTHS[idx] || monthNum;
+  const monthList = MONTH_NAMES[lang] || MONTH_NAMES.tg;
+  const monthName = monthList[idx] || monthNum;
   return `${monthName} ${yearStr}`;
 }

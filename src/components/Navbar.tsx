@@ -12,17 +12,20 @@ import {
   WifiOff,
 } from 'lucide-react';
 import { useExpenses } from '../context/ExpenseContext';
+import { useLanguage } from '../context/LanguageContext';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const Navbar: React.FC = () => {
   const { syncStatus } = useExpenses();
+  const { t } = useLanguage();
 
   const navItems = [
-    { to: '/', label: 'Панели асосӣ', icon: LayoutDashboard },
-    { to: '/history', label: 'Таърих', icon: History },
-    { to: '/reports', label: 'Ҳисоботҳо', icon: PieChart },
-    { to: '/budget', label: 'Буҷет', icon: Wallet },
-    { to: '/categories', label: 'Категорияҳо', icon: Tags },
-    { to: '/profile', label: 'Профил', icon: User },
+    { to: '/', label: t.navDashboard, icon: LayoutDashboard },
+    { to: '/history', label: t.navHistory, icon: History },
+    { to: '/reports', label: t.navReports, icon: PieChart },
+    { to: '/budget', label: t.navBudget, icon: Wallet },
+    { to: '/categories', label: t.navCategories, icon: Tags },
+    { to: '/profile', label: t.navProfile, icon: User },
   ];
 
   return (
@@ -31,15 +34,20 @@ export const Navbar: React.FC = () => {
       <header className="sticky top-0 z-40 bg-slate-800/90 backdrop-blur border-b border-slate-700/60 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <img src="/logo.png" alt="Хароҷоти Ман" className="w-10 h-10 rounded-xl object-contain shadow-lg shadow-sky-500/10" />
+            <img
+              src="/logo.png"
+              alt={t.appName}
+              className="w-10 h-10 rounded-xl object-contain shadow-lg shadow-sky-500/10"
+            />
             <div>
-              <h1 className="font-bold text-lg text-white leading-tight">Хароҷоти Ман</h1>
-              <p className="text-xs text-slate-400">Идораи молияи шахсӣ (TJS)</p>
+              <h1 className="font-bold text-lg text-white leading-tight">{t.appName}</h1>
+              <p className="text-xs text-slate-400">{t.appSubtitle}</p>
             </div>
           </div>
 
-          {/* Sync indicator */}
-          <div className="flex items-center gap-3">
+          {/* Sync indicator + Language switcher + Desktop nav */}
+          <div className="flex items-center gap-2.5">
+            {/* Sync status */}
             <div
               className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                 syncStatus === 'synced'
@@ -48,30 +56,32 @@ export const Navbar: React.FC = () => {
                   ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
                   : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
               }`}
-              title="Ҳолати ҳамоҳангсозии маълумот бо пойгоҳ"
             >
               {syncStatus === 'synced' && (
                 <>
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Ҳамоҳанг шуд</span>
+                  <span className="hidden sm:inline">{t.syncSynced}</span>
                 </>
               )}
               {syncStatus === 'syncing' && (
                 <>
                   <RefreshCw className="w-3.5 h-3.5 text-amber-400 animate-spin" />
-                  <span>Ҳамоҳангсозӣ...</span>
+                  <span className="hidden sm:inline">{t.syncSyncing}</span>
                 </>
               )}
               {syncStatus === 'offline' && (
                 <>
                   <WifiOff className="w-3.5 h-3.5 text-rose-400" />
-                  <span>Офлайн</span>
+                  <span className="hidden sm:inline">{t.syncOffline}</span>
                 </>
               )}
             </div>
 
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
             {/* Desktop Navigation links */}
-            <nav className="hidden md:flex items-center space-x-1 pl-4 border-l border-slate-700">
+            <nav className="hidden md:flex items-center space-x-1 pl-3 border-l border-slate-700">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (

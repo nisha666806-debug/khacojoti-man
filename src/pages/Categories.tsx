@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Tags, Plus, Check } from 'lucide-react';
 import { useExpenses } from '../context/ExpenseContext';
+import { useLanguage } from '../context/LanguageContext';
 import { Category } from '../types';
-import { formatMoney } from '../utils/currency';
 import { getCurrentDushanbeMonthString } from '../utils/date';
 
 export const Categories: React.FC = () => {
   const { categories, expenses, addCustomCategory } = useExpenses();
+  const { t, formatMoney, getLocalizedCategoryName } = useLanguage();
 
   const [isAdding, setIsAdding] = useState(false);
   const [newCatName, setNewCatName] = useState('');
@@ -47,9 +48,9 @@ export const Categories: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Категорияҳои хароҷот</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">{t.categoriesTitle}</h2>
           <p className="text-sm text-slate-400">
-            Идоракунии гурӯҳҳои хароҷот барои гурӯҳбандии беҳтар
+            {t.categoriesSubtitle}
           </p>
         </div>
 
@@ -58,32 +59,32 @@ export const Categories: React.FC = () => {
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm shadow-lg shadow-sky-600/30 transition-all"
         >
           <Plus className="w-4 h-4" />
-          <span>Категорияи нав</span>
+          <span>{t.newCategoryBtn}</span>
         </button>
       </div>
 
       {/* Add Category Form */}
       {isAdding && (
         <div className="bg-slate-800/90 border border-slate-700/80 p-5 rounded-2xl shadow-lg animate-in fade-in zoom-in-95 duration-150">
-          <h3 className="font-bold text-white text-base mb-3">Иловаи категорияи нав</h3>
+          <h3 className="font-bold text-white text-base mb-3">{t.addNewCategory}</h3>
           <form onSubmit={handleAddCategory} className="space-y-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1">
-                Номи категория *
+                {t.categoryNameLabel}
               </label>
               <input
                 type="text"
                 required
                 value={newCatName}
                 onChange={(e) => setNewCatName(e.target.value)}
-                placeholder="Масалан: Хариди туҳфаҳо"
+                placeholder={t.categoryNamePlaceholder}
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 outline-none text-sm text-white"
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-2">
-                Интихоби ранг
+                {t.colorSelection}
               </label>
               <div className="flex items-center gap-2">
                 {colorPalette.map((c) => (
@@ -106,13 +107,13 @@ export const Categories: React.FC = () => {
                 onClick={() => setIsAdding(false)}
                 className="px-4 py-2 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 text-sm font-medium"
               >
-                Бекор кардан
+                {t.cancelBtn}
               </button>
               <button
                 type="submit"
                 className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-semibold text-sm shadow-md shadow-sky-600/30"
               >
-                Илова кардан
+                {t.addBtn}
               </button>
             </div>
           </form>
@@ -124,6 +125,7 @@ export const Categories: React.FC = () => {
         {categories.map((cat) => {
           const catExpenses = thisMonthExpenses.filter((e) => e.categoryId === cat.id);
           const totalCatDiram = catExpenses.reduce((sum, e) => sum + e.amountInDiram, 0);
+          const localizedName = getLocalizedCategoryName(cat.id, cat.name);
 
           return (
             <div
@@ -139,14 +141,14 @@ export const Categories: React.FC = () => {
                 </div>
                 {cat.isDefault && (
                   <span className="text-[10px] font-medium text-slate-400 bg-slate-700/60 px-2 py-0.5 rounded-full">
-                    Асосӣ
+                    {t.defaultBadge}
                   </span>
                 )}
               </div>
 
-              <h4 className="font-bold text-white text-sm mb-1">{cat.name}</h4>
+              <h4 className="font-bold text-white text-sm mb-1">{localizedName}</h4>
               <p className="text-xs text-slate-400">
-                Дар ин моҳ: {catExpenses.length} сабт
+                {catExpenses.length} {t.thisMonthRecords}
               </p>
               <div className="text-sm font-semibold text-sky-400 mt-2">
                 {formatMoney(totalCatDiram)}

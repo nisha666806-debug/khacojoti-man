@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { Expense } from '../types';
 import { useExpenses } from '../context/ExpenseContext';
+import { useLanguage } from '../context/LanguageContext';
 import { somoniToDiram, diramToSomoni } from '../utils/currency';
 import { getCurrentDushanbeDateString } from '../utils/date';
 
@@ -17,6 +18,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
   expenseToEdit,
 }) => {
   const { categories, createExpense, editExpense } = useExpenses();
+  const { t, getLocalizedCategoryName } = useLanguage();
 
   const [title, setTitle] = useState('');
   const [somoniAmount, setSomoniAmount] = useState('');
@@ -50,18 +52,18 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
     setError('');
 
     if (!title.trim()) {
-      setError('Лутфан номи хароҷотро ворид кунед');
+      setError(t.errEnterTitle);
       return;
     }
 
     const diram = somoniToDiram(somoniAmount);
     if (diram <= 0) {
-      setError('Маблағ бояд аз 0 зиёд бошад');
+      setError(t.errAmountGreaterZero);
       return;
     }
 
     const selectedCategory = categories.find((c) => c.id === categoryId);
-    const categoryName = selectedCategory ? selectedCategory.name : 'Дигар';
+    const categoryName = selectedCategory ? selectedCategory.name : 'other';
 
     setSubmitting(true);
     try {
@@ -86,7 +88,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
       }
       onClose();
     } catch (err: any) {
-      setError(err?.message || 'Хатогӣ ҳангоми сабт');
+      setError(err?.message || t.errGenericSave);
     } finally {
       setSubmitting(false);
     }
@@ -104,7 +106,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
         </button>
 
         <h3 className="text-xl font-bold mb-4">
-          {expenseToEdit ? 'Таҳрири хароҷот' : 'Хароҷоти нав'}
+          {expenseToEdit ? t.editExpenseTitle : t.newExpenseModalTitle}
         </h3>
 
         {error && (
@@ -116,21 +118,21 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Номи хароҷот *
+              {t.expenseTitleLabel}
             </label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Масалан: Хариди нон ва мева"
+              placeholder={t.expenseTitlePlaceholder}
               className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none text-sm text-white"
             />
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Маблағ (бо сомонӣ, TJS) *
+              {t.amountLabel}
             </label>
             <div className="relative">
               <input
@@ -144,17 +146,17 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
                 className="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none text-sm text-white pr-20"
               />
               <span className="absolute right-3.5 top-2.5 text-xs font-medium text-slate-400">
-                сомонӣ
+                {t.currencyUnit}
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">
-              Дар пойгоҳ ба таври автоматӣ ба дирам захира мешавад (1 с. = 100 д.)
+              {t.diramStorageHint}
             </p>
           </div>
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Категория
+              {t.categoryLabel}
             </label>
             <select
               value={categoryId}
@@ -163,7 +165,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
             >
               {categories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
+                  {getLocalizedCategoryName(c.id, c.name)}
                 </option>
               ))}
             </select>
@@ -171,7 +173,7 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Сана (Asia/Dushanbe)
+              {t.dateLabel}
             </label>
             <input
               type="date"
@@ -184,13 +186,13 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
 
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
-              Эзоҳ (ихтиёрӣ)
+              {t.noteLabel}
             </label>
             <textarea
               rows={2}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="Тафсилоти иловагӣ..."
+              placeholder={t.notePlaceholder}
               className="w-full px-3.5 py-2 rounded-xl bg-slate-900 border border-slate-700 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 outline-none text-sm text-white resize-none"
             />
           </div>
@@ -202,14 +204,14 @@ export const ExpenseModal: React.FC<ExpenseModalProps> = ({
               disabled={submitting}
               className="px-4 py-2 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 text-sm font-medium transition-colors"
             >
-              Бекор кардан
+              {t.cancelBtn}
             </button>
             <button
               type="submit"
               disabled={submitting}
               className="px-5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-sm font-semibold shadow-lg shadow-sky-600/30 transition-colors"
             >
-              {submitting ? 'Сабт шуда истодааст...' : 'Сабт кардан'}
+              {submitting ? t.savingExpense : t.saveExpense}
             </button>
           </div>
         </form>

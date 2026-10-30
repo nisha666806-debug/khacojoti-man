@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Share2, PlusSquare, X } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -7,19 +8,18 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 export const InstallPrompt: React.FC = () => {
+  const { t } = useLanguage();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    // Check if already installed / standalone
     const isRunningStandalone =
       window.matchMedia('(display-mode: standalone)').matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(isRunningStandalone);
 
-    // Check if iOS
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIosDevice);
@@ -57,8 +57,8 @@ export const InstallPrompt: React.FC = () => {
               <Download className="w-4 h-4 text-white" />
             </div>
             <div>
-              <p className="text-xs font-bold leading-tight">Хароҷоти Ман дар телефон</p>
-              <p className="text-[11px] text-sky-100">Ҳамчун барнома дар экрани телефон насб кунед</p>
+              <p className="text-xs font-bold leading-tight">{t.installTitle}</p>
+              <p className="text-[11px] text-sky-100">{t.installSubtitle}</p>
             </div>
           </div>
 
@@ -67,7 +67,7 @@ export const InstallPrompt: React.FC = () => {
               onClick={handleInstallClick}
               className="px-3 py-1 bg-white text-sky-700 hover:bg-sky-50 text-xs font-bold rounded-lg shadow-sm transition-all active:scale-95"
             >
-              Насб кардан
+              {t.installBtn}
             </button>
             <button
               onClick={() => setDismissed(true)}
@@ -79,14 +79,14 @@ export const InstallPrompt: React.FC = () => {
         </div>
       )}
 
-      {/* iOS Safari Help banner (shown once if not standalone) */}
+      {/* iOS Safari Help banner */}
       {isIOS && !deferredPrompt && (
         <div className="bg-slate-800 border-b border-slate-700 px-4 py-2 text-slate-200 text-xs flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Share2 className="w-4 h-4 text-sky-400 shrink-0" />
             <span>
-              Дар iPhone: тугмаи <strong className="text-white">«Share»</strong> ва сипас{' '}
-              <strong className="text-white">«Ба экрани асосӣ» (<PlusSquare className="w-3.5 h-3.5 inline text-sky-400" />)</strong>-ро пахш намоед
+              {t.installIosHelp}{' '}
+              <PlusSquare className="w-3.5 h-3.5 inline text-sky-400" />
             </span>
           </div>
           <button onClick={() => setDismissed(true)} className="p-1 text-slate-400 hover:text-white ml-2">

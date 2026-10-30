@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { PieChart as PieChartIcon } from 'lucide-react';
 import { useExpenses } from '../context/ExpenseContext';
-import { formatMoney } from '../utils/currency';
-import { formatDushanbeMonth, getCurrentDushanbeMonthString } from '../utils/date';
+import { useLanguage } from '../context/LanguageContext';
+import { getCurrentDushanbeMonthString } from '../utils/date';
 
 export const Reports: React.FC = () => {
   const { expenses } = useExpenses();
+  const { t, formatMoney, formatMonth, getLocalizedCategoryName } = useLanguage();
   const [selectedMonth, setSelectedMonth] = useState(getCurrentDushanbeMonthString());
 
   // Extract all available months from expenses
@@ -30,10 +31,11 @@ export const Reports: React.FC = () => {
 
   // Group by category
   const categoryStats = useMemo(() => {
-    const map = new Map<string, { name: string; amountInDiram: number; count: number }>();
+    const map = new Map<string, { id: string; name: string; amountInDiram: number; count: number }>();
 
     monthExpenses.forEach((exp) => {
       const existing = map.get(exp.categoryId) || {
+        id: exp.categoryId,
         name: exp.categoryName,
         amountInDiram: 0,
         count: 0,
@@ -43,16 +45,16 @@ export const Reports: React.FC = () => {
       map.set(exp.categoryId, existing);
     });
 
-    const list = Array.from(map.entries()).map(([id, data]) => ({
-      id,
-      name: data.name,
+    const list = Array.from(map.values()).map((data) => ({
+      id: data.id,
+      name: getLocalizedCategoryName(data.id, data.name),
       amountInDiram: data.amountInDiram,
       count: data.count,
       percentage: totalMonthDiram > 0 ? Math.round((data.amountInDiram / totalMonthDiram) * 100) : 0,
     }));
 
     return list.sort((a, b) => b.amountInDiram - a.amountInDiram);
-  }, [monthExpenses, totalMonthDiram]);
+  }, [monthExpenses, totalMonthDiram, getLocalizedCategoryName]);
 
   const topCategory = categoryStats[0] || null;
 
@@ -61,9 +63,9 @@ export const Reports: React.FC = () => {
       {/* Header with Month Selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">Ҳисоботҳо ва таҳлил</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tight">{t.reportsTitle}</h2>
           <p className="text-sm text-slate-400">
-            Тақсимоти хароҷот аз рӯи категорияҳо ва моҳҳо
+            {t.reportsSubtitle}
           </p>
         </div>
 
@@ -74,7 +76,7 @@ export const Reports: React.FC = () => {
         >
           {availableMonths.map((m) => (
             <option key={m} value={m}>
-              {formatDushanbeMonth(m)}
+              {formatMonth(m)}
             </option>
           ))}
         </select>
@@ -83,32 +85,32 @@ export const Reports: React.FC = () => {
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
-          <span className="text-xs font-semibold uppercase text-slate-400">Хароҷоти умумӣ</span>
+          <span className="text-xs font-semibold uppercase text-slate-400">{t.totalExpenses}</span>
           <div className="text-2xl font-bold text-white mt-1">
             {formatMoney(totalMonthDiram)}
           </div>
           <p className="text-xs text-slate-400 mt-2">
-            Дар моҳи {formatDushanbeMonth(selectedMonth)}
+            {t.reportsSubtitle} {formatMonth(selectedMonth)}
           </p>
         </div>
 
         <div className="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
-          <span className="text-xs font-semibold uppercase text-slate-400">Категорияи асосӣ</span>
+          <span className="text-xs font-semibold uppercase text-slate-400">{t.topCategory}</span>
           <div className="text-2xl font-bold text-sky-400 mt-1">
-            {topCategory ? topCategory.name : 'Маълумот нест'}
+            {topCategory ? topCategory.name : t.noData}
           </div>
           <p className="text-xs text-slate-400 mt-2">
-            {topCategory ? `${formatMoney(topCategory.amountInDiram)} (${topCategory.percentage}%)` : 'Хароҷот нест'}
+            {topCategory ? `${formatMoney(topCategory.amountInDiram)} (${topCategory.percentage}%)` : t.noExpensesThisMonth}
           </p>
         </div>
 
         <div className="bg-slate-800/80 border border-slate-700/60 p-5 rounded-2xl shadow-sm">
-          <span className="text-xs font-semibold uppercase text-slate-400">Миқдори пардохтҳо</span>
+          <span className="text-xs font-semibold uppercase text-slate-400">{t.paymentCount}</span>
           <div className="text-2xl font-bold text-white mt-1">
             {monthExpenses.length}
           </div>
           <p className="text-xs text-slate-400 mt-2">
-            Миқдори хароҷотҳо дар ин моҳ
+            {t.paymentsThisMonth}
           </p>
         </div>
       </div>
@@ -117,12 +119,12 @@ export const Reports: React.FC = () => {
       <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-5 shadow-sm space-y-4">
         <div className="flex items-center gap-2">
           <PieChartIcon className="w-5 h-5 text-sky-400" />
-          <h3 className="text-lg font-bold text-white">Тақсимоти хароҷот аз рӯи категорияҳо</h3>
+          <h3 className="text-lg font-bold text-white">{t.categoryBreakdown}</h3>
         </div>
 
         {categoryStats.length === 0 ? (
           <div className="text-center py-12 text-slate-400">
-            <p className="text-sm">Барои моҳи интихобшуда ягон хароҷот вуҷуд надорад.</p>
+            <p className="text-sm">{t.noExpensesThisMonth}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -145,7 +147,7 @@ export const Reports: React.FC = () => {
                     <span className="font-medium text-white flex items-center gap-2">
                       <span className={`w-2.5 h-2.5 rounded-full ${colorClass}`} />
                       {item.name}
-                      <span className="text-xs text-slate-400">({item.count} пардохт)</span>
+                      <span className="text-xs text-slate-400">({item.count} {t.paymentsCountLabel})</span>
                     </span>
                     <span className="font-semibold text-slate-200">
                       {formatMoney(item.amountInDiram)}{' '}

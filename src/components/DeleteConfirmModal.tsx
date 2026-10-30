@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Expense } from '../types';
-import { formatMoney } from '../utils/currency';
+import { useLanguage } from '../context/LanguageContext';
 
 interface DeleteConfirmModalProps {
   isOpen: boolean;
@@ -16,6 +16,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   onClose,
   onConfirm,
 }) => {
+  const { t, formatMoney } = useLanguage();
   const [deleting, setDeleting] = useState(false);
 
   if (!isOpen || !expense) return null;
@@ -37,14 +38,13 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
           <AlertTriangle className="w-6 h-6" />
         </div>
 
-        <h3 className="text-lg font-bold mb-2">Нест кардани хароҷот</h3>
+        <h3 className="text-lg font-bold mb-2">{t.deleteConfirmTitle}</h3>
         <p className="text-sm text-slate-300 mb-4">
-          Оё мутмаин ҳастед, ки мехоҳед хароҷоти{' '}
-          <strong className="text-white">"{expense.title}"</strong> ба маблағи{' '}
+          {t.deleteConfirmQuestion}{' '}
+          <strong className="text-white">"{expense.title}"</strong> —{' '}
           <strong className="text-rose-400">
             {formatMoney(expense.amountInDiram)}
           </strong>
-          -ро нест кунед?
         </p>
 
         <div className="flex items-center justify-center gap-3">
@@ -54,7 +54,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             disabled={deleting}
             className="px-4 py-2 rounded-xl border border-slate-600 text-slate-300 hover:bg-slate-700 text-sm font-medium transition-colors"
           >
-            Бекор кардан
+            {t.cancelBtn}
           </button>
           <button
             type="button"
@@ -62,7 +62,7 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
             disabled={deleting}
             className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-sm font-semibold shadow-lg shadow-rose-600/30 transition-colors"
           >
-            {deleting ? 'Нест шуда истодааст...' : 'Бале, нест карда шавад'}
+            {deleting ? t.deletingExpense : t.deleteConfirmYes}
           </button>
         </div>
       </div>
