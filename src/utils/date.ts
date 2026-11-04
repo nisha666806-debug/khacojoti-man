@@ -73,3 +73,32 @@ export function formatDushanbeMonth(monthStr: string, lang: Language = 'tg'): st
   const monthName = monthList[idx] || monthNum;
   return `${monthName} ${yearStr}`;
 }
+
+/**
+ * Returns Monday (start) and Sunday (end) of the current week formatted as YYYY-MM-DD for Asia/Dushanbe
+ */
+export function getCurrentDushanbeWeekRange(): { start: string; end: string } {
+  const dushanbeStr = getCurrentDushanbeDateString();
+  const [year, month, day] = dushanbeStr.split('-').map(Number);
+  const d = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+  const dayOfWeek = d.getUTCDay(); // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+  d.setUTCDate(d.getUTCDate() - diffToMonday);
+  const start = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+
+  d.setUTCDate(d.getUTCDate() + 6);
+  const end = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+
+  return { start, end };
+}
+
+/**
+ * Checks if a date YYYY-MM-DD falls within the current week (Monday to Sunday) in Asia/Dushanbe
+ */
+export function isDateInDushanbeCurrentWeek(dateStr: string): boolean {
+  if (!dateStr) return false;
+  const { start, end } = getCurrentDushanbeWeekRange();
+  return dateStr >= start && dateStr <= end;
+}
+

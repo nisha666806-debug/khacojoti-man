@@ -2,7 +2,11 @@ import React, { useState, useMemo } from 'react';
 import { Search, Filter, Plus, Trash2, Edit3 } from 'lucide-react';
 import { useExpenses } from '../context/ExpenseContext';
 import { useLanguage } from '../context/LanguageContext';
-import { getCurrentDushanbeDateString, getCurrentDushanbeMonthString } from '../utils/date';
+import {
+  getCurrentDushanbeDateString,
+  getCurrentDushanbeMonthString,
+  isDateInDushanbeCurrentWeek,
+} from '../utils/date';
 import { ExpenseModal } from '../components/ExpenseModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
 import { Expense } from '../types';
@@ -13,7 +17,7 @@ export const History: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [dateFilter, setDateFilter] = useState<'all' | 'today' | 'month'>('all');
+  const [dateFilter, setDateFilter] = useState<'today' | 'week' | 'month' | 'all'>('today');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
@@ -34,6 +38,8 @@ export const History: React.FC = () => {
       let matchesDate = true;
       if (dateFilter === 'today') {
         matchesDate = exp.date === todayStr;
+      } else if (dateFilter === 'week') {
+        matchesDate = isDateInDushanbeCurrentWeek(exp.date);
       } else if (dateFilter === 'month') {
         matchesDate = exp.date.startsWith(currentMonthStr);
       }
@@ -116,18 +122,31 @@ export const History: React.FC = () => {
           {/* Date Filter Tabs */}
           <div className="flex bg-slate-900 p-1 rounded-xl border border-slate-700">
             <button
-              onClick={() => setDateFilter('all')}
-              className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                dateFilter === 'all'
+              type="button"
+              onClick={() => setDateFilter('today')}
+              className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg transition-colors ${
+                dateFilter === 'today'
                   ? 'bg-sky-600 text-white shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {t.filterAllTime}
+              {t.filterToday}
             </button>
             <button
+              type="button"
+              onClick={() => setDateFilter('week')}
+              className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg transition-colors ${
+                dateFilter === 'week'
+                  ? 'bg-sky-600 text-white shadow'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              {t.filterThisWeek}
+            </button>
+            <button
+              type="button"
               onClick={() => setDateFilter('month')}
-              className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-colors ${
+              className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg transition-colors ${
                 dateFilter === 'month'
                   ? 'bg-sky-600 text-white shadow'
                   : 'text-slate-400 hover:text-white'
@@ -136,14 +155,15 @@ export const History: React.FC = () => {
               {t.filterThisMonth}
             </button>
             <button
-              onClick={() => setDateFilter('today')}
-              className={`flex-1 py-1 text-xs font-semibold rounded-lg transition-colors ${
-                dateFilter === 'today'
+              type="button"
+              onClick={() => setDateFilter('all')}
+              className={`flex-1 py-1.5 px-2 text-xs font-semibold rounded-lg transition-colors ${
+                dateFilter === 'all'
                   ? 'bg-sky-600 text-white shadow'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              {t.filterToday}
+              {t.filterAllTime}
             </button>
           </div>
         </div>

@@ -49,9 +49,10 @@ export interface TranslationDictionary {
   historySubtitle: string;
   searchPlaceholder: string;
   allCategories: string;
-  filterAllTime: string;
-  filterThisMonth: string;
   filterToday: string;
+  filterThisWeek: string;
+  filterThisMonth: string;
+  filterAllTime: string;
   foundRecords: string;
   totalSum: string;
   noExpensesFound: string;

@@ -2,6 +2,8 @@ import { describe, it, expect } from 'vitest';
 import {
   getCurrentDushanbeDateString,
   getCurrentDushanbeMonthString,
+  getCurrentDushanbeWeekRange,
+  isDateInDushanbeCurrentWeek,
   formatDushanbeDate,
   formatDushanbeMonth,
   TAJIK_MONTHS,
@@ -41,5 +43,18 @@ describe('Date Utilities (Asia/Dushanbe)', () => {
     expect(TAJIK_MONTHS).toHaveLength(12);
     expect(TAJIK_MONTHS[0]).toBe('Январ');
     expect(TAJIK_MONTHS[11]).toBe('Декабр');
+  });
+
+  it('calculates current Dushanbe week range and checks dates accurately', () => {
+    const { start, end } = getCurrentDushanbeWeekRange();
+    expect(start).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(end).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(end >= start).toBe(true);
+
+    const todayStr = getCurrentDushanbeDateString();
+    expect(isDateInDushanbeCurrentWeek(todayStr)).toBe(true);
+    expect(isDateInDushanbeCurrentWeek(start)).toBe(true);
+    expect(isDateInDushanbeCurrentWeek(end)).toBe(true);
+    expect(isDateInDushanbeCurrentWeek('1999-01-01')).toBe(false);
   });
 });
