@@ -70,6 +70,14 @@ export interface TranslationDictionary {
   categoryBreakdown: string;
   noExpensesThisMonth: string;
   paymentsCountLabel: string;
+  weeklyAnalysisTitle: string;
+  weeklyChartTitle: string;
+  weekLabel: string;
+  highestSpendingWeek: string;
+  sundayLabel: string;
+  sundaySpending: string;
+  noExpensesThisWeek: string;
+  dailyBreakdown: string;
 
   // Budget
   budgetTitle: string;

@@ -4,6 +4,7 @@ import {
   getCurrentDushanbeMonthString,
   getCurrentDushanbeWeekRange,
   isDateInDushanbeCurrentWeek,
+  getWeeksInMonth,
   formatDushanbeDate,
   formatDushanbeMonth,
   TAJIK_MONTHS,
@@ -56,5 +57,21 @@ describe('Date Utilities (Asia/Dushanbe)', () => {
     expect(isDateInDushanbeCurrentWeek(start)).toBe(true);
     expect(isDateInDushanbeCurrentWeek(end)).toBe(true);
     expect(isDateInDushanbeCurrentWeek('1999-01-01')).toBe(false);
+  });
+
+  it('generates weeks for a given month with correct Sundays and dates', () => {
+    const weeks = getWeeksInMonth('2026-11');
+    expect(weeks.length).toBeGreaterThanOrEqual(4);
+    expect(weeks[0].weekNumber).toBe(1);
+    expect(weeks[0].startDate).toBe('2026-11-01');
+    
+    // Check that Sundays are correctly marked
+    const allDays = weeks.flatMap((w) => w.days);
+    expect(allDays.length).toBe(30); // November has 30 days
+    const sundays = allDays.filter((d) => d.isSunday);
+    expect(sundays.length).toBeGreaterThan(0);
+    sundays.forEach((s) => {
+      expect(s.dayOfWeek).toBe(0);
+    });
   });
 });

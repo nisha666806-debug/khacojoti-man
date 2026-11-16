@@ -8,6 +8,7 @@ import {
 } from '../utils/date';
 import { ExpenseModal } from '../components/ExpenseModal';
 import { DeleteConfirmModal } from '../components/DeleteConfirmModal';
+import { WeeklyMonthReport } from '../components/WeeklyMonthReport';
 import { Expense } from '../types';
 import { Link } from 'react-router-dom';
 
@@ -154,6 +155,9 @@ export const Dashboard: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Weekly Month Analysis with Sunday in Red and Week Comparison Graph */}
+      <WeeklyMonthReport expenses={expenses} selectedMonth={thisMonthStr} />
 
       {/* Recent Expenses List */}
       <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-5 shadow-sm">

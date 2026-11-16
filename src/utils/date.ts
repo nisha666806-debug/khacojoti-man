@@ -102,3 +102,55 @@ export function isDateInDushanbeCurrentWeek(dateStr: string): boolean {
   return dateStr >= start && dateStr <= end;
 }
 
+export interface MonthWeek {
+  weekNumber: number;
+  startDate: string;
+  endDate: string;
+  sundayDate: string | null;
+  days: {
+    day: number;
+    dayOfWeek: number;
+    dateStr: string;
+    isSunday: boolean;
+  }[];
+}
+
+/**
+ * Returns the calendar weeks for a given month (YYYY-MM).
+ * Weeks end on Sunday (or end of month).
+ */
+export function getWeeksInMonth(monthStr: string): MonthWeek[] {
+  const [yearStr, monthNumStr] = monthStr.split('-');
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthNumStr, 10);
+  if (isNaN(year) || isNaN(month)) return [];
+
+  const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+  const weeks: MonthWeek[] = [];
+  let currentDays: MonthWeek['days'] = [];
+  let weekIndex = 1;
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const d = new Date(Date.UTC(year, month - 1, day, 12, 0, 0));
+    const dayOfWeek = d.getUTCDay();
+    const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    const isSunday = dayOfWeek === 0;
+
+    currentDays.push({ day, dayOfWeek, dateStr, isSunday });
+
+    if (isSunday || day === daysInMonth) {
+      weeks.push({
+        weekNumber: weekIndex++,
+        days: currentDays,
+        startDate: currentDays[0].dateStr,
+        endDate: currentDays[currentDays.length - 1].dateStr,
+        sundayDate: currentDays.find((d) => d.isSunday)?.dateStr || null,
+      });
+      currentDays = [];
+    }
+  }
+
+  return weeks;
+}
+
+
